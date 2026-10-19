@@ -1,0 +1,5 @@
+{
+  "name": "beacon",
+  "private": true,
+  "packageManager": "pnpm@10"
+}
