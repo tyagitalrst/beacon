@@ -9,6 +9,6 @@ Frontend monitoring platform: TS SDK → Go ingestion API → Postgres → Vue d
 - Every performance change must be measured before/after and logged in docs/performance.md.
 
 ## Commands
-- `docker compose up -d`: Postgres
+- `docker compose up -d`: Postgres on :5435
 - `cd apps/api && go run ./cmd/api`: API on :8080
 - `pnpm --filter dashboard dev`: dashboard on :5173

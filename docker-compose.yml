@@ -1,0 +1,11 @@
+services:
+  postgres:
+    image: postgres:17
+    environment:
+      POSTGRES_USER: beacon
+      POSTGRES_PASSWORD: beacon
+      POSTGRES_DB: beacon
+    ports: ["5435:5432"]
+    volumes: [pgdata:/var/lib/postgresql/data]
+volumes:
+  pgdata: {}
