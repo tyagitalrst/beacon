@@ -11,6 +11,7 @@ import (
 	"time"
 
 	"github.com/tyagitalrst/beacon/apps/api/internal/platform/config"
+	"github.com/tyagitalrst/beacon/apps/api/internal/platform/middleware"
 )
 
 func main() {
@@ -22,13 +23,20 @@ func main() {
 	defer stop()
 
 	mux := http.NewServeMux()
+
 	mux.HandleFunc("GET /healthz", func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
 	})
 
+	handler := middleware.RequestID(
+		middleware.Logger(logger)(
+			middleware.Recover(logger)(mux),
+		),
+	)
+
 	srv := &http.Server{
 		Addr:              ":" + cfg.Port,
-		Handler:           mux,
+		Handler:           handler,
 		ReadHeaderTimeout: 5 * time.Second,
 	}
 
