@@ -10,8 +10,10 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/tyagitalrst/beacon/apps/api/internal/platform/config"
 	"github.com/tyagitalrst/beacon/apps/api/internal/platform/middleware"
+	"github.com/tyagitalrst/beacon/apps/api/internal/platform/partitions"
 )
 
 func main() {
@@ -21,6 +23,22 @@ func main() {
 	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt,
 		syscall.SIGTERM)
 	defer stop()
+
+	pool, err := pgxpool.New(ctx, cfg.DatabaseURL)
+	if err != nil {
+		logger.Error("db config", "err", err)
+		os.Exit(1)
+	}
+	defer pool.Close()
+	if err := pool.Ping(ctx); err != nil {
+		logger.Error("db connect", "err", err)
+		os.Exit(1)
+	}
+
+	if err := partitions.EnsureDaily(ctx, pool, 3); err != nil {
+		logger.Error("ensure partitions", "err", err)
+		os.Exit(1)
+	}
 
 	mux := http.NewServeMux()
 
